@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo" id="ui-title">
+            <i class="fa-solid fa-leaf"></i> AgriSmart AI
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn header-btn" id="settingsBtn"><i class="fa-solid fa-gear"></i></button>
+        </div>
+    </header>
+
+    <div class="settings-panel" id="settingsPanel">
+        <h3 id="ui-settings-title">Settings</h3>
+        <div class="setting-item">
+            <label for="themeToggle" id="ui-dark-mode">Dark Theme</label>
+            <label class="switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="setting-item">
+            <label for="langSelect" id="ui-language">Language</label>
+            <select id="langSelect" class="lang-dropdown">
+                <option value="English">English</option>
+                <option value="Telugu">తెలుగు (Telugu)</option>
+                <option value="Hindi">हिंदी (Hindi)</option>
+            </select>
+        </div>
+        <hr style="margin: 15px 0; border: 0.5px solid var(--border-color);">
+        <button id="settingsAuthBtn" class="btn secondary-btn" style="width: 100%;"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+    </div>
+
+    <nav class="app-nav">
+        <button class="nav-btn active" data-target="tab-chat" id="nav-chat"><i class="fa-solid fa-robot"></i> AI Assistant</button>
+        <button class="nav-btn" data-target="tab-health" id="nav-health"><i class="fa-solid fa-microscope"></i> Crop Health</button>
+        <button class="nav-btn" data-target="tab-community" id="nav-comm"><i class="fa-solid fa-users"></i> Community</button>
+        <button class="nav-btn" data-target="tab-profile" id="nav-prof"><i class="fa-solid fa-user"></i> Profile</button>
+    </nav>
+
+    <main class="container">
+        <section id="tab-chat" class="tab-content active card chat-card">
+            <h2 id="ui-chat-title"><i class="fa-solid fa-comments"></i> Smart Assistant</h2>
+            
+            <div class="chat-window" id="chatWindow">
+                <div class="message bot-message">
+                    <span class="msg-text" id="ui-welcome">Hello! Ask me about farming practices, or upload images of your crops! I will remember our conversation.</span>
+                    <div class="message-actions">
+                        <i class="fa-solid fa-volume-high action-icon speak-btn" title="Read Aloud"></i>
+                        <i class="fa-regular fa-copy action-icon copy-btn" title="Copy Text"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="image-preview-container hidden" id="imagePreviewContainer"></div>
+            
+            <div class="chat-input-area">
+                <input type="file" id="chatImageInput" accept="image/*" multiple hidden>
+                <button class="icon-btn" id="attachBtn" title="Attach Images"><i class="fa-solid fa-paperclip"></i></button>
+                <button class="icon-btn" id="voiceBtn" title="Voice Input"><i class="fa-solid fa-microphone"></i></button>
+                <input type="text" id="chatInput" placeholder="Type or upload images...">
+                <button class="btn primary-btn" id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </section>
+
+        <section id="tab-health" class="tab-content card">
+            <h2 id="ui-health-title"><i class="fa-solid fa-seedling"></i> Deep Crop Analysis</h2>
+            <p id="ui-health-desc">Upload a clear image of a leaf or soil to get NPK levels, health ratings, and expert suggestions.</p>
+            <div class="upload-area" style="display: flex; gap: 10px; margin-top: 15px;">
+                <input type="file" id="healthImageInput" accept="image/*" hidden>
+                <button class="btn primary-btn" onclick="document.getElementById('healthImageInput').click()" id="ui-btn-select">Select Image</button>
+                <button class="btn secondary-btn" id="analyzeHealthBtn">Analyze Health</button>
+            </div>
+            <img id="healthImagePreview" class="hidden" style="max-height: 150px; margin-top: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div id="healthResult" class="result-box hidden markdown-body" style="margin-top: 15px;"></div> 
+        </section>
+
+        <section id="tab-community" class="tab-content card">
+            
+            <div id="communityMainView">
+                <h2 id="ui-comm-title"><i class="fa-solid fa-users"></i> Community Support</h2>
+                <div class="chat-input-area" style="margin-bottom: 20px;">
+                    <input type="text" id="communityInput" placeholder="Ask the community a question...">
+                    <button class="btn primary-btn" id="postCommBtn">Post</button>
+                </div>
+                <div id="communityFeed">
+                    </div>
+            </div>
+
+            <div id="communityDetailView" class="hidden">
+                <button class="btn secondary-btn" id="backToFeedBtn" style="margin-bottom: 15px; padding: 5px 10px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                
+                <div id="focusedPostContent" class="community-post" style="border-left: 4px solid var(--primary-green); font-size: 1.1rem; padding: 20px;">
+                    </div>
+                
+                <h3 style="margin: 15px 0 10px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Comments</h3>
+                
+                <div id="postCommentsContainer" class="comments-section" style="border: none; padding-left: 0;">
+                    </div>
+                
+                <div class="add-comment-area" style="margin-top: 20px;">
+                    <input type="text" id="replyInput" placeholder="Add a comment..." class="auth-input" style="margin-bottom: 0;">
+                    <button class="btn primary-btn" id="submitReplyBtn"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+            
+        </section>
+
+        <section id="tab-profile" class="tab-content card">
+            <h2><i class="fa-solid fa-user-circle"></i> User Account</h2>
+            
+            <div id="loginForm">
+                <h3>Sign In</h3>
+                <input type="text" id="loginUser" placeholder="Username or Email" class="auth-input">
+                <input type="password" id="loginPass" placeholder="Password" class="auth-input">
+                <p id="loginError" style="color: #e74c3c; display: none; margin-bottom: 10px; font-size: 0.9rem;"></p>
+                <button class="btn primary-btn auth-btn" id="doLoginBtn">Login</button>
+                <p style="margin-top: 15px; text-align: center;">Don't have an account? <a href="#" id="showSignup" style="color: var(--primary-green);">Sign Up</a></p>
+            </div>
+
+            <div id="signupForm" class="hidden">
+                <h3>Sign Up</h3>
+                <input type="text" id="regName" placeholder="Full Name" class="auth-input">
+                <input type="email" id="regEmail" placeholder="Email ID" class="auth-input">
+                <input type="tel" id="regPhone" placeholder="Mobile No." class="auth-input">
+                <input type="password" id="regPass" placeholder="Password" class="auth-input">
+                <input type="password" id="regConfirm" placeholder="Confirm Password" class="auth-input">
+                <p id="regError" style="color: #e74c3c; display: none; margin-bottom: 10px; font-size: 0.9rem;"></p>
+                <button class="btn primary-btn auth-btn" id="doSignupBtn">Register</button>
+                <p style="margin-top: 15px; text-align: center;">Already have an account? <a href="#" id="showLogin" style="color: var(--primary-green);">Sign In</a></p>
+            </div>
+
+            <div id="loggedInDashboard" class="hidden" style="text-align: center; padding: 20px 0;">
+                <i class="fa-solid fa-circle-user" style="font-size: 4rem; color: var(--primary-green); margin-bottom: 15px;"></i>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 5px;">
+                    <h3 id="profileNameDisplay" style="margin: 0;">Welcome, Farmer!</h3>
+                    <button id="editProfileBtn" class="icon-btn" style="padding: 5px 8px; font-size: 0.9rem;" title="Edit Profile"><i class="fa-solid fa-pencil"></i></button>
+                </div>
+                <p id="profileStatusText" style="color: var(--text-light); margin-bottom: 20px;">Your account is active and verified.</p>
+                
+                <div id="editProfileContainer" class="hidden" style="margin-bottom: 20px;">
+                    <input type="text" id="editNameInput" class="auth-input" placeholder="Enter new name">
+                    <button class="btn primary-btn" id="saveProfileBtn" style="width: 100%;">Save Name Changes</button>
+                </div>
+                <button class="btn secondary-btn auth-btn" id="doLogoutBtn">Logout</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
